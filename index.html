@@ -122,43 +122,32 @@ el.appendChild(div);
 }
 }
 
-window.move=function(n,dir){
+function move(n){
 const el=document.getElementById(‘meals’);
-const outClass=dir===‘left’?‘swipe-out-left’:dir===‘right’?‘swipe-out-right’:(n>0?‘swipe-out-left’:‘swipe-out-right’);
+const outClass=n>0?‘swipe-out-left’:‘swipe-out-right’;
 el.classList.add(outClass);
-setTimeout(()=>{
+setTimeout(function(){
 el.classList.remove(‘swipe-out-left’,‘swipe-out-right’);
-cur=new Date(cur);cur.setDate(cur.getDate()+n);
-renderHeader();renderWeek();load();
+cur=new Date(cur);
+cur.setDate(cur.getDate()+n);
+renderHeader();
+renderWeek();
+load();
 },160);
-};
-
-// 날짜 화살표는 방향 없이 호출되므로 래핑
-document.querySelectorAll(’.date-arrow’).forEach((btn,i)=>{
-btn.onclick=()=>window.move(i===0?-1:1);
-});
+}
 
 // 스와이프 감지
 (function(){
-let sx=0,sy=0,locked=false;
-document.body.addEventListener(‘touchstart’,e=>{
+let sx=0,sy=0;
+document.body.addEventListener(‘touchstart’,function(e){
 sx=e.touches[0].clientX;
 sy=e.touches[0].clientY;
-locked=false;
 },{passive:true});
-document.body.addEventListener(‘touchmove’,e=>{
-if(locked)return;
-const dx=e.touches[0].clientX-sx;
-const dy=e.touches[0].clientY-sy;
-if(Math.abs(dy)>Math.abs(dx))locked=true; // 세로 스크롤이면 무시
-},{passive:true});
-document.body.addEventListener(‘touchend’,e=>{
-if(locked)return;
-const dx=e.changedTouches[0].clientX-sx;
-const dy=e.changedTouches[0].clientY-sy;
-if(Math.abs(dx)<50||Math.abs(dy)>60)return; // 짧거나 세로 이동이 크면 무시
-if(dx<0){window.move(1,‘left’);}   // 왼쪽으로 쓸면 → 다음날
-else{window.move(-1,‘right’);}     // 오른쪽으로 쓸면 → 이전날
+document.body.addEventListener(‘touchend’,function(e){
+var dx=e.changedTouches[0].clientX-sx;
+var dy=e.changedTouches[0].clientY-sy;
+if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx)*1.2)return;
+move(dx<0?1:-1);
 },{passive:true});
 })();
 
@@ -200,12 +189,12 @@ lines.push(’’);
 return lines.join(’\n’).trim();
 }
 
-window.copyMeal=function(){var t=getMealText();if(!t)return;navigator.clipboard.writeText(t).then(function(){toast(‘복사됐어요’);});};
-window.shareMeal=async function(){
+function copyMeal(){var t=getMealText();if(!t)return;navigator.clipboard.writeText(t).then(function(){toast(‘복사됐어요’);});}
+async function shareMeal(){
 var t=getMealText();if(!t)return;
 if(navigator.share){try{await navigator.share({title:‘구미전자공고 급식’,text:t});}catch(e){if(e.name!==‘AbortError’)toast(‘공유 실패’);}}
 else{navigator.clipboard.writeText(t).then(function(){toast(‘복사됐어요’);});}
-};
+}
 
 function toast(msg){var t=document.getElementById(‘toast’);t.textContent=msg;t.classList.add(‘show’);setTimeout(function(){t.classList.remove(‘show’);},2200);}
 
