@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -64,7 +63,7 @@
     <div class="header-school">구미전자공업고등학교</div>
     <div class="header-title">오늘의 급식</div>
   </div>
-  <button class="dark-btn" id="darkBtn" onclick="toggleDark()">🌙</button>
+  <button class="dark-btn" id="darkBtn" onclick="toggleDark()">&#127769;</button>
 </div>
 <div class="date-bar">
   <div class="date-row">
@@ -91,115 +90,114 @@
   const DOW=['일','월','화','수','목','금','토'];
   const NAMES={'1':'조식','2':'중식','3':'석식'};
 
-const saved=localStorage.getItem(‘dk’);
-if(saved===‘1’||(!saved&&matchMedia(’(prefers-color-scheme:dark)’).matches))setDark(true);
-function setDark(v){v?document.body.setAttribute(‘data-dark’,’’):document.body.removeAttribute(‘data-dark’);document.getElementById(‘darkBtn’).textContent=v?‘☀️’:‘🌙’;}
-function toggleDark(){const on=document.body.hasAttribute(‘data-dark’);setDark(!on);localStorage.setItem(‘dk’,on?‘0’:‘1’);}
+  const saved=localStorage.getItem('dk');
+  if(saved==='1'||(!saved&&matchMedia('(prefers-color-scheme:dark)').matches))setDark(true);
+  function setDark(v){v?document.body.setAttribute('data-dark',''):document.body.removeAttribute('data-dark');document.getElementById('darkBtn').textContent=v?'\u2600\uFE0F':'\uD83C\uDF19';}
+  function toggleDark(){const on=document.body.hasAttribute('data-dark');setDark(!on);localStorage.setItem('dk',on?'0':'1');}
 
-let cur=new Date();
-const cache={};
-const pad=n=>String(n).padStart(2,‘0’);
-const fmt=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
-const isToday=d=>fmt(d)===fmt(new Date());
-const sameDay=(a,b)=>fmt(a)===fmt(b);
+  let cur=new Date();
+  const cache={};
+  const pad=n=>String(n).padStart(2,'0');
+  const fmt=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
+  const isToday=d=>fmt(d)===fmt(new Date());
+  const sameDay=(a,b)=>fmt(a)===fmt(b);
 
-function renderHeader(){
-document.getElementById(‘dateLabel’).innerHTML=cur.getFullYear()+‘년 ‘+(cur.getMonth()+1)+‘월 ‘+cur.getDate()+‘일’+(isToday(cur)?’<span class="today-chip">오늘</span>’:’’);
-document.getElementById(‘dayLabel’).textContent=DOW[cur.getDay()]+‘요일’;
-}
+  function renderHeader(){
+    document.getElementById('dateLabel').innerHTML=cur.getFullYear()+'년 '+(cur.getMonth()+1)+'월 '+cur.getDate()+'일'+(isToday(cur)?'<span class="today-chip">오늘</span>':'');
+    document.getElementById('dayLabel').textContent=DOW[cur.getDay()]+'요일';
+  }
 
-function renderWeek(){
-const dow=cur.getDay();
-const mon=new Date(cur);mon.setDate(cur.getDate()-(dow===0?6:dow-1));
-const el=document.getElementById(‘week’);el.innerHTML=’’;
-for(let i=0;i<5;i++){
-const d=new Date(mon);d.setDate(mon.getDate()+i);
-const div=document.createElement(‘div’);
-div.className=‘wday’+(isToday(d)?’ is-today’:’’)+(sameDay(d,cur)?’ sel’:’’);
-div.innerHTML=’<div class="w">’+DOW[d.getDay()]+’</div><div class="d">’+d.getDate()+’</div>’;
-div.onclick=()=>{cur=d;renderHeader();renderWeek();load();};
-el.appendChild(div);
-}
-}
+  function renderWeek(){
+    const dow=cur.getDay();
+    const mon=new Date(cur);mon.setDate(cur.getDate()-(dow===0?6:dow-1));
+    const el=document.getElementById('week');el.innerHTML='';
+    for(let i=0;i<5;i++){
+      const d=new Date(mon);d.setDate(mon.getDate()+i);
+      const div=document.createElement('div');
+      div.className='wday'+(isToday(d)?' is-today':'')+(sameDay(d,cur)?' sel':'');
+      div.innerHTML='<div class="w">'+DOW[d.getDay()]+'</div><div class="d">'+d.getDate()+'</div>';
+      div.onclick=()=>{cur=d;renderHeader();renderWeek();load();};
+      el.appendChild(div);
+    }
+  }
 
-function move(n){
-const el=document.getElementById(‘meals’);
-const outClass=n>0?‘swipe-out-left’:‘swipe-out-right’;
-el.classList.add(outClass);
-setTimeout(function(){
-el.classList.remove(‘swipe-out-left’,‘swipe-out-right’);
-cur=new Date(cur);
-cur.setDate(cur.getDate()+n);
-renderHeader();
-renderWeek();
-load();
-},160);
-}
+  function move(n){
+    const el=document.getElementById('meals');
+    const outClass=n>0?'swipe-out-left':'swipe-out-right';
+    el.classList.add(outClass);
+    setTimeout(function(){
+      el.classList.remove('swipe-out-left','swipe-out-right');
+      cur=new Date(cur);
+      cur.setDate(cur.getDate()+n);
+      renderHeader();
+      renderWeek();
+      load();
+    },160);
+  }
 
-// 스와이프 감지
-(function(){
-let sx=0,sy=0;
-document.body.addEventListener(‘touchstart’,function(e){
-sx=e.touches[0].clientX;
-sy=e.touches[0].clientY;
-},{passive:true});
-document.body.addEventListener(‘touchend’,function(e){
-var dx=e.changedTouches[0].clientX-sx;
-var dy=e.changedTouches[0].clientY-sy;
-if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx)*1.2)return;
-move(dx<0?1:-1);
-},{passive:true});
-})();
+  // 스와이프 감지
+  (function(){
+    let sx=0,sy=0;
+    document.body.addEventListener('touchstart',function(e){
+      sx=e.touches[0].clientX;
+      sy=e.touches[0].clientY;
+    },{passive:true});
+    document.body.addEventListener('touchend',function(e){
+      var dx=e.changedTouches[0].clientX-sx;
+      var dy=e.changedTouches[0].clientY-sy;
+      if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx)*1.2)return;
+      move(dx<0?1:-1);
+    },{passive:true});
+  })();
 
-async function load(){
-const key=fmt(cur);
-const el=document.getElementById(‘meals’);
-document.getElementById(‘shareRow’).style.display=‘none’;
-if(cache[key]){render(cache[key]);return;}
-el.innerHTML=’<div class="state"><div class="spinner"></div>불러오는 중…</div>’;
-try{
-const url=‘https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=’+KEY+’&Type=json&pIndex=1&pSize=10&ATPT_OFCDC_SC_CODE=’+OFFICE+’&SD_SCHUL_CODE=’+SCHOOL+’&MLSV_YMD=’+key;
-const res=await fetch(url);
-const text=await res.text();
-const data=JSON.parse(text);
-if(data.mealServiceDietInfo){cache[key]=data.mealServiceDietInfo[1].row;render(cache[key]);}
-else if(data.RESULT&&data.RESULT.CODE===‘INFO-200’){el.innerHTML=’<div class="state"><div class="state-icon">🍽️</div>급식 정보가 없어요<br><span style="font-size:12px">주말이거나 방학일 수 있어요</span></div>’;}
-else{el.innerHTML=’<div class="state"><div class="state-icon">⚠️</div>’+(data.RESULT?data.RESULT.MESSAGE:‘오류’)+’</div>’;}
-}catch(e){el.innerHTML=’<div class="state"><div class="state-icon">⚠️</div>불러오기 실패<br><span style="font-size:12px">’+e.message+’</span></div>’;}
-}
+  async function load(){
+    const key=fmt(cur);
+    const el=document.getElementById('meals');
+    document.getElementById('shareRow').style.display='none';
+    if(cache[key]){render(cache[key]);return;}
+    el.innerHTML='<div class="state"><div class="spinner"></div>불러오는 중...</div>';
+    try{
+      const url='https://open.neis.go.kr/hub/mealServiceDietInfo?KEY='+KEY+'&Type=json&pIndex=1&pSize=10&ATPT_OFCDC_SC_CODE='+OFFICE+'&SD_SCHUL_CODE='+SCHOOL+'&MLSV_YMD='+key;
+      const res=await fetch(url);
+      const text=await res.text();
+      const data=JSON.parse(text);
+      if(data.mealServiceDietInfo){cache[key]=data.mealServiceDietInfo[1].row;render(cache[key]);}
+      else if(data.RESULT&&data.RESULT.CODE==='INFO-200'){el.innerHTML='<div class="state"><div class="state-icon">🍽️</div>급식 정보가 없어요<br><span style="font-size:12px">주말이거나 방학일 수 있어요</span></div>';}
+      else{el.innerHTML='<div class="state"><div class="state-icon">⚠️</div>'+(data.RESULT?data.RESULT.MESSAGE:'오류')+'</div>';}
+    }catch(e){el.innerHTML='<div class="state"><div class="state-icon">⚠️</div>불러오기 실패<br><span style="font-size:12px">'+e.message+'</span></div>';}
+  }
 
-function render(rows){
-document.getElementById(‘meals’).innerHTML=rows.map(function(row){
-var code=row.MMEAL_SC_CODE;
-var items=row.DDISH_NM.replace(/<br/>/g,’\n’).replace(/<br>/g,’\n’).split(’\n’).map(function(s){return s.replace(/([\d.]+)/g,’’).trim();}).filter(Boolean);
-return ‘<div class="meal-type-row"><div class="meal-type-name">’+(NAMES[code]||row.MMEAL_SC_NM)+’</div></div><div class="meal-card">’+items.map(function(item,i){return ‘<div class="meal-item"><span class="meal-num">’+(i+1)+’</span><span class="meal-name">’+item+’</span></div>’;}).join(’’)+’</div>’;
-}).join(’’);
-document.getElementById(‘shareRow’).style.display=‘flex’;
-}
+  function render(rows){
+    document.getElementById('meals').innerHTML=rows.map(function(row){
+      var code=row.MMEAL_SC_CODE;
+      var items=row.DDISH_NM.replace(/<br\/>/g,'\n').replace(/<br>/g,'\n').split('\n').map(function(s){return s.replace(/\([\d.]+\)/g,'').trim();}).filter(Boolean);
+      return '<div class="meal-type-row"><div class="meal-type-name">'+(NAMES[code]||row.MMEAL_SC_NM)+'</div></div><div class="meal-card">'+items.map(function(item,i){return '<div class="meal-item"><span class="meal-num">'+(i+1)+'</span><span class="meal-name">'+item+'</span></div>';}).join('')+'</div>';
+    }).join('');
+    document.getElementById('shareRow').style.display='flex';
+  }
 
-function getMealText(){
-var rows=cache[fmt(cur)];if(!rows)return’’;
-var dateStr=cur.getFullYear()+‘년 ‘+(cur.getMonth()+1)+‘월 ‘+cur.getDate()+‘일 ‘+DOW[cur.getDay()]+‘요일’;
-var lines=[‘구미전자공고 급식’,dateStr,’’];
-rows.forEach(function(row){
-lines.push(’[ ‘+NAMES[row.MMEAL_SC_CODE]+’ ]’);
-row.DDISH_NM.replace(/<br/>/g,’\n’).replace(/<br>/g,’\n’).split(’\n’).map(function(s){return s.replace(/([\d.]+)/g,’’).trim();}).filter(Boolean).forEach(function(i){lines.push(’• ‘+i);});
-lines.push(’’);
-});
-return lines.join(’\n’).trim();
-}
+  function getMealText(){
+    var rows=cache[fmt(cur)];if(!rows)return'';
+    var dateStr=cur.getFullYear()+'년 '+(cur.getMonth()+1)+'월 '+cur.getDate()+'일 '+DOW[cur.getDay()]+'요일';
+    var lines=['구미전자공고 급식',dateStr,''];
+    rows.forEach(function(row){
+      lines.push('[ '+NAMES[row.MMEAL_SC_CODE]+' ]');
+      row.DDISH_NM.replace(/<br\/>/g,'\n').replace(/<br>/g,'\n').split('\n').map(function(s){return s.replace(/\([\d.]+\)/g,'').trim();}).filter(Boolean).forEach(function(i){lines.push('• '+i);});
+      lines.push('');
+    });
+    return lines.join('\n').trim();
+  }
 
-function copyMeal(){var t=getMealText();if(!t)return;navigator.clipboard.writeText(t).then(function(){toast(‘복사됐어요’);});}
-async function shareMeal(){
-var t=getMealText();if(!t)return;
-if(navigator.share){try{await navigator.share({title:‘구미전자공고 급식’,text:t});}catch(e){if(e.name!==‘AbortError’)toast(‘공유 실패’);}}
-else{navigator.clipboard.writeText(t).then(function(){toast(‘복사됐어요’);});}
-}
+  function copyMeal(){var t=getMealText();if(!t)return;navigator.clipboard.writeText(t).then(function(){toast('복사됐어요');});}
+  async function shareMeal(){
+    var t=getMealText();if(!t)return;
+    if(navigator.share){try{await navigator.share({title:'구미전자공고 급식',text:t});}catch(e){if(e.name!=='AbortError')toast('공유 실패');}}
+    else{navigator.clipboard.writeText(t).then(function(){toast('복사됐어요');});}
+  }
 
-function toast(msg){var t=document.getElementById(‘toast’);t.textContent=msg;t.classList.add(‘show’);setTimeout(function(){t.classList.remove(‘show’);},2200);}
+  function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
 
-renderHeader();renderWeek();load();
+  renderHeader();renderWeek();load();
 </script>
-
 </body>
 </html>
